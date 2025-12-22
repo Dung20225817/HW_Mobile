@@ -10,7 +10,7 @@ import androidx.recyclerview.widget.RecyclerView
 class StudentAdapter(
     private val students: List<Student>,
     private val onDeleteClick: (Int) -> Unit,
-    private val onItemClick: (Int) -> Unit
+    private val onItemClick: (Int) -> Unit // Trả về vị trí khi click vào item
 ) : RecyclerView.Adapter<StudentAdapter.StudentViewHolder>() {
 
     inner class StudentViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
@@ -22,10 +22,12 @@ class StudentAdapter(
             tvName.text = student.name
             tvStudentId.text = student.studentId
 
+            // Nút xóa giữ nguyên logic cũ
             btnDelete.setOnClickListener {
                 onDeleteClick(position)
             }
 
+            // Click vào item để mở chi tiết
             itemView.setOnClickListener {
                 onItemClick(position)
             }
