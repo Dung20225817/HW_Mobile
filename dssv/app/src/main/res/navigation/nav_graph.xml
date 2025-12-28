@@ -29,4 +29,10 @@
         android:name="com.example.a18112025.UpdateStudentFragment"
         android:label="Cập nhật thông tin"
         tools:layout="@layout/fragment_update_student" />
+
+    <fragment
+        android:id="@+id/fileExplorerFragment"
+        android:name="com.example.a18112025.FileExplorerFragment"
+        android:label="Quản lý tập tin"
+        tools:layout="@layout/fragment_file_explorer" />
 </navigation>

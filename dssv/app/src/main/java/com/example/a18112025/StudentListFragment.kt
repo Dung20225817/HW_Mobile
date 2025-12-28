@@ -26,6 +26,10 @@ class StudentListFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        binding.btnFiles.setOnClickListener {
+            findNavController().navigate(R.id.fileExplorerFragment)
+        }
+
         val adapter = StudentAdapter(listOf(),
             onDeleteClick = { position -> viewModel.deleteStudent(position) },
             onItemClick = { position ->

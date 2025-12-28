@@ -1,41 +1,50 @@
 package com.example.a18112025
 
+import android.app.Application
+import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.ViewModel
 
-class StudentViewModel : ViewModel() {
-    // Sử dụng LiveData để Fragment tự động cập nhật giao diện khi dữ liệu thay đổi
+// Đổi ViewModel thành AndroidViewModel để lấy được Application Context
+class StudentViewModel(application: Application) : AndroidViewModel(application) {
+
     private val _studentList = MutableLiveData<MutableList<Student>>()
     val studentList: LiveData<MutableList<Student>> = _studentList
 
+    // Khởi tạo Database Helper
+    private val dbHelper = StudentDatabaseHelper(application)
+
     init {
-        // Dữ liệu mẫu ban đầu
-        _studentList.value = mutableListOf(
-            Student("20200001", "Nguyễn Văn A", "0901234567", "Hà Nội"),
-            Student("20200002", "Trần Thị B", "0987654321", "TP.HCM")
-        )
+        // Load dữ liệu từ SQLite ngay khi App mở lên
+        loadStudentsFromDb()
+    }
+
+    // Hàm load lại dữ liệu từ DB lên UI
+    private fun loadStudentsFromDb() {
+        val list = dbHelper.getAllStudents()
+        _studentList.value = list
     }
 
     fun addStudent(student: Student) {
-        val currentList = _studentList.value ?: mutableListOf()
-        currentList.add(student)
-        _studentList.value = currentList // Cập nhật LiveData
+        dbHelper.addStudent(student)
+        loadStudentsFromDb() // Load lại để UI cập nhật
     }
 
     fun updateStudent(position: Int, newInfo: Student) {
-        val currentList = _studentList.value ?: return
-        if (position in currentList.indices) {
-            currentList[position] = newInfo
-            _studentList.value = currentList
-        }
+        // Với SQLite, ta update dựa trên ID (MSSV) chứ không phải position
+        // Tuy nhiên UI của bạn đang trả về position, ta dùng nó để lấy ID cũ nếu cần
+        // Nhưng ở form update, studentId đã nằm trong newInfo rồi.
+        dbHelper.updateStudent(newInfo)
+        loadStudentsFromDb()
     }
 
     fun deleteStudent(position: Int) {
-        val currentList = _studentList.value ?: return
-        if (position in currentList.indices) {
-            currentList.removeAt(position)
-            _studentList.value = currentList
+        // Lấy ID của sinh viên tại vị trí position để xóa trong DB
+        val list = _studentList.value
+        if (list != null && position in list.indices) {
+            val studentIdToDelete = list[position].studentId
+            dbHelper.deleteStudent(studentIdToDelete)
+            loadStudentsFromDb()
         }
     }
 }
